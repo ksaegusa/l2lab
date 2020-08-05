@@ -1,0 +1,46 @@
+---
+- hosts: SW
+  gather_facts: false
+  vars:
+    date: "{{ lookup('pipe','date +%Y%m%d') }}"
+
+  tasks:
+  - name: 事前Config取得
+    ios_config:
+      backup: yes
+      backup_options:
+        dir_path: "{{ date }}_backup"
+        filename: "{{ state|default('test') }}_{{ inventory_hostname }}_before.cfg"
+    register: backup
+
+  - name: Vlan設定
+    ios_vlans:
+      config: "{{ vlans }}"
+      state: merged
+
+  - name: Lag設定
+    ios_lag_interfaces:
+      config: "{{ lag }}"
+      state: merged
+
+  - name: L2Interface設定
+    ios_l2_interfaces:
+      config: "{{ interfaces }}"
+      state: merged
+  
+  - name: Interface no shutdown
+    ios_interfaces:
+      config: "{{ interfaces_status }}"
+      state: merged
+
+  - name: Config保存
+    ios_config: 
+      save_when: always
+
+  - name: 事後Config取得
+    ios_config:
+      backup: yes
+      backup_options:
+        dir_path: "{{ date }}_backup"
+        filename: "{{ state|default('test') }}_{{ inventory_hostname }}_after.cfg"
+    register: backup

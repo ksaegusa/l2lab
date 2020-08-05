@@ -1,0 +1,35 @@
+vlans:
+  - name: Production
+    vlan_id: 15
+    state: active
+  - name: Develop
+    vlan_id: 16
+    state: active
+
+lag:
+  - name: '1'
+    members:
+      - member: GigabitEthernet0/1
+        mode: active
+      - member: GigabitEthernet0/2
+        mode: active
+
+interfaces:
+  - name: GigabitEthernet0/1
+    access:
+      vlan: 15
+  - name: GigabitEthernet0/2
+    access:
+      vlan: 15
+  - name: GigabitEthernet0/3
+  - name: Port-channel1
+    access:
+      vlan: 15
+
+interfaces_status:
+  - name: GigabitEthernet0/1
+    enabled: yes
+  - name: GigabitEthernet0/2
+    enabled: yes
+  - name: GigabitEthernet0/3
+    enabled: no
